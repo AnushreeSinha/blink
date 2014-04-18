@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+	<!-- do not use import statements if CXFServlet init parameters link to 
+		this beans.xml -->
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<jaxrs:server id="blinkService" address="/crud">
+		<jaxrs:serviceBeans>
+			<ref bean="blinkCrudServiceBean" />
+			<ref bean="blinkAppServiceBean" />
+		</jaxrs:serviceBeans>
+	</jaxrs:server>
+
+	<bean id="modelGenerator" class="com.blink.model.generator.ModelGenerator">
+		<property name="localRepo" value="/Users/asing20/localrepo/" />
+	</bean>
+
+	<bean id="blinkAppServiceBean" class="com.blink.designer.service.AppService">
+		<property name="generators" ref="generators" />
+		<property name="modelGenerator" ref="modelGenerator" />
+		<property name="scmManager" ref="scmManager" />
+	</bean>
+	<util:map id="generators" map-class="java.util.HashMap">
+		<entry key="small" value-ref="smallAppGeneratorBean" />
+	</util:map>
+
+	<bean id="smallAppGeneratorBean" class="com.blink.MiniAppGenerator">
+	</bean>
+
+	<bean id="blinkCrudServiceBean" class="com.blink.designer.service.CRUDService">
+		<property name="typeRegistry" ref="typeRegistry" />
+	</bean>
+
+	<bean id="typeRegistry" class="com.blink.designer.service.TypeRegistryImpl">
+		<constructor-arg value="com.blink.designer.model" />
+	</bean>
+</beans>

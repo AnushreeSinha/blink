@@ -53,6 +53,8 @@ public class DAOMethodGeneratorImpl implements DAOMethodGenerator{
 	public void getDeleteDAOMethod(JDefinedClass serviceClass,JDefinedClass daoDataClass) {
 		JMethod method = serviceClass.method(JMod.PUBLIC, void.class, "delete"+daoDataClass.name());
 		method.param(Long.class, "id");
+		//com.pizza.jpa.BookJPA bookJPA=entityManager.find(com.pizza.jpa.BookJPA.class, id);
+		method.body().directStatement(daoDataClass.fullName()+" "+CodeUtil.camelCase(daoDataClass.name()+"=entityManager.find("+daoDataClass.fullName()+".class, id);"));
         
 		method.body().directStatement("entityManager.remove("+ daoDataClass.name()+".class);");
 	}

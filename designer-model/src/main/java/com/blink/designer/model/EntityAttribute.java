@@ -1,5 +1,7 @@
 package com.blink.designer.model;
 
+
+
 public class EntityAttribute extends BaseBlinkModel{
 		
 	/**

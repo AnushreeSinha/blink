@@ -37,7 +37,7 @@ public class ServiceMethodGeneratorImpl implements ServiceMethodGenerator{
 	public void getCreateServiceMethod(JDefinedClass serviceClass,JDefinedClass serviceDataClass) {
 		JMethod method = serviceClass.method(JMod.PUBLIC, serviceDataClass,"create" +serviceDataClass.name());
 		JVar input = method.param(serviceDataClass, CodeUtil.camelCase(serviceDataClass.name()));
-		input.annotate(javax.ws.rs.QueryParam.class).param("value", "");
+		
 
 		//annotateMethod(javax.ws.rs.POST.class,method,"/create"+serviceDataClass.name()+"/");
 		annotateMethod(javax.ws.rs.POST.class,method,serviceDataClass.name()+"/");
@@ -73,7 +73,7 @@ public class ServiceMethodGeneratorImpl implements ServiceMethodGenerator{
 	public void getUpdateServiceMethod(JDefinedClass serviceClass,JDefinedClass serviceDataClass) {
 		JMethod method = serviceClass.method(JMod.PUBLIC, serviceDataClass,"update" +serviceDataClass.name());
 		JVar input = method.param(serviceDataClass, CodeUtil.camelCase(serviceDataClass.name()));
-		input.annotate(javax.ws.rs.QueryParam.class).param("value", "");
+		
 
 		//annotateMethod(javax.ws.rs.PUT.class,method, "/update"+serviceDataClass.name()+"/");
 		annotateMethod(javax.ws.rs.PUT.class,method, serviceDataClass.name()+"/");

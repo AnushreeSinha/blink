@@ -26,6 +26,7 @@
 		} );
 		
 		
+		
 		Ext.define('Entity2',{
 		
 		    extend: 'Ext.data.Model',
@@ -36,7 +37,9 @@
 			              ]
 		});
 		
+		
 		Ext.define('Type' , {
 			 extend: 'Ext.data.Model',
 			 fields : ['id','className','name','description']
 		});
+		

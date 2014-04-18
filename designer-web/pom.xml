@@ -27,4 +27,5 @@
 	<build>
 		<finalName>desginer-web</finalName>
 	</build>
+	<groupId>com.blink</groupId>
 </project>

@@ -93,6 +93,11 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
+             <groupId>javax.persistence</groupId>
+             <artifactId>persistence-api</artifactId>
+             <version>1.0.2</version>
+            </dependency>
+			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>5.1.22</version>
@@ -102,6 +107,18 @@
 				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 				<version>2.7.0</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.surefire</groupId>
+				<artifactId>surefire-booter</artifactId>
+				<version>2.7.2</version>
+			</dependency>
+			<dependency>
+			<groupId>org.apache.maven.archetypes</groupId>
+			<artifactId>maven-archetype-webapp</artifactId>
+			<version>1.0</version>
+			</dependency>
+            
+
 		</dependencies>
 	</dependencyManagement>
 	<build>
@@ -115,6 +132,38 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<!--  <skipTests>true</skipTests> -->
+				</configuration>
+			</plugin>
+
+
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>com.gitblit</id>
+			<name>Gitblit</name>
+			<url>http://gitblit.github.io/gitblit-maven/</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<name>Maven Plugin Repository</name>
+			<url>http://search.maven.org</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

@@ -3,9 +3,62 @@
 	href="js/resources/css/ext-all.css">
 <script type="text/javascript" src="js/ext-all.js"></script>
 <script type="text/javascript" src="js/app-all.js"></script>
+<jsp:directive.page import="java.io.*" />
+<jsp:directive.page import="javax.swing.*" />
+<jsp:directive.page import="java.awt.event.*" />
+<jsp:directive.page import="java.awt.*" />
+<jsp:directive.page import="java.util.*" />
+<jsp:directive.page import="javax.swing.SwingUtilities" />
+<jsp:directive.page import="javax.swing.filechooser.*" />
+
+<jsp:directive.page import="java.util.*" />
+
+
+
+<script>
+
+
+function loadApplet(code,codebase,width,height){
+	var placeholder=document.getElementById('download');
+	var a = document.createElement('object'); 
+	a.setAttribute('type','application/x-java-applet'); 
+	a.setAttribute('width',width); 
+	a.setAttribute('height',height); 
+	var codeParam = document.createElement('param'); 
+	codeParam.setAttribute('name','code');
+	codeParam.setAttribute('value',code); 
+	a.appendChild(codeParam); 
+	var codebaseParam = document.createElement('param'); 
+	codebaseParam.setAttribute('name','codebase');
+	codebaseParam.setAttribute('value',codebase);
+	a.appendChild(codebaseParam);
+	placeholder.appendChild(a); }
+	
+/*function openApplet()
+	{alert("hi");
+	var app = document.MyApplet;
+    var attributes ={code:'MyApplet',width:500, height:300};
+	}*/
+</script>
+
 <body>
+    <applet code="MyApplet.class" codebase="/../main/java/MyApplet.class" height="300" width="550" />
+    <!--  <object name="BrowsePage" type="application/x-java-applet" height="300" width="550" > -->
+    <param name="code" value="BrowsePage.class"/>
+    </object>
 	<script>
+ var baseURL = 'http://localhost:8080/desginer-web/services/crud/';
+	</script>
+	<script type="text/javascript" src="js/app-model.js"></script>
+	<script type="text/javascript" src="js/app-store.js"></script>
+	
+	</body>
+	
+
+	<script>
+	
 	   var baseURL = 'http://localhost:8080/desginer-web/services/crud/';
+	   var baseGIT='https://localhost:18443/gitblit/repositories/';
 	</script>
 	<script type="text/javascript" src="js/app-model.js"></script>
 	<script type="text/javascript" src="js/app-store.js"></script>
@@ -22,11 +75,12 @@
 			        closeable: true,
 			        selType: 'rowmodel',
 			        plugins: [
-			            Ext.create('Ext.grid.plugin.RowEditing', {
-			                clicksToEdit: 1
+			              rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+			                clicksToEdit: 1, 
+			                saveBtnText : 'Update New',
 			            })
 			        ],
-			        dockedItems: [{
+			       dockedItems: [{
 			            xtype: 'toolbar',
 			            items: [{
 			                text: 'Add',
@@ -45,9 +99,114 @@
 			                    }
 			                }
 			            }]
-			        }]
+			        }] 
 			    });
 	    }
+		
+		function createGrid_attr(title, store, columns, id,entityForm) {
+			  return	Ext.create('Ext.grid.Panel', {
+			        title: title,
+			        store: store,
+			        id:title,
+			        columns:columns,
+			        height: 200,
+			        width: 400,
+			        name: title,
+			        closeable: true,
+			        selType: 'rowmodel',
+			        plugins: [
+			              rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+			                clicksToEdit: 1, 
+			                saveBtnText : 'Update New',
+			               
+			             /*  listeners: {
+			                	edit: function(editor, e){
+			                	    var record=e.record;
+			                	    record.data.id=0;
+			                	    var typeid=record.data.type;
+			                	    record.data.type={'id':typeid};
+			                	    alert(record.data.toSource());
+			                	    var complete=submitCreateAttributeFunction(entityForm,record);
+			                	    alert(complete.toSource());
+			                	    
+			                	    Ext.Ajax.request({
+			             				url : baseURL + 'entity/',
+			             				method : 'POST',
+			             				headers : {
+			             					'Content-Type' : 'application/json'
+			             				},
+			             				jsonData : complete,
+			             				success:
+			             					function(){alert("Successful");},
+			             				failure:
+			             					function(){alert("Failure");},
+			             				
+			             			});
+			                	     
+			            				}
+			               				 } */
+			              
+			            			})
+			              ],
+			    					
+			                		
+			                	
+			                
+			            
+			        
+			       dockedItems: [{
+			            xtype: 'toolbar',
+			            items: [{
+			                text: 'Add',
+			                iconCls: 'icon-add',
+			                handler: function(){
+			                    store.insert(0, new EntityAttribute());
+			                    rowEditing.startEdit(0, 0);
+			                }
+			            }, '-', {
+			                text: 'Delete',
+			                iconCls: 'icon-delete',
+			                handler: function(){
+			                    var selection = grid.getView().getSelectionModel().getSelection()[0];
+			                    if (selection) {
+			                        store.remove(selection);
+			                    }
+			                }
+			            }]
+			        }] 
+			    });
+	    }
+		
+		function submitCreateAttributeFunction()
+		{
+			var formPanel = this.up('form');
+			var form = formPanel.getForm();
+            var formValues = form.getValues();
+			formValues.parentPackage  = {'id': form.findField('parentPackage.id').getValue()  };
+			var gridData = new Array();
+			for (var j=0; j<=Ext.getCmp('Attributes').getStore().getCount()-1; j++) {
+			   Ext.getCmp('Attributes').getSelectionModel().select(j,true);
+			   if(Ext.getCmp('Attributes').store.getAt(j).data.type < 100)
+				 {
+			       var typeid=Ext.getCmp('Attributes').store.getAt(j).data.type;
+			       Ext.getCmp('Attributes').store.getAt(j).data.type={'id':typeid};
+			     }
+			    if(Ext.getCmp('Attributes').getSelectionModel().isSelected(j)){
+			    	if(Ext.getCmp('Attributes').store.getAt(j).data.id > 0)
+		               gridData.push(Ext.getCmp('Attributes').store.getAt(j).data);
+			    	else{
+			    		Ext.getCmp('Attributes').store.getAt(j).data.id=0;
+			    		gridData.push(Ext.getCmp('Attributes').store.getAt(j).data);
+			    	}
+			    		
+		      }
+			   
+			                }
+			formValues.entityAttributes = gridData;
+		    return formValues; 
+
+		}
+	  		
 	  		
 		function getEntityFormItems() {
 	
@@ -83,7 +242,7 @@
 				action : 'newpackage',
 				handler : clickHandler
 			}, {
-				text : 'New Enitty',
+				text : 'New Entity',
 				action : 'addentity',
 				handler : clickHandler
 			}, {
@@ -138,8 +297,9 @@
 		
 		var win ;
 		var minAppWin; 
+		var miniApp;
 		function createMiniApp( response ) {
-			var miniApp = Ext.JSON.decode(response.responseText);
+			 miniApp = Ext.JSON.decode(response.responseText);
 			
 			if( response.status == "200")
 			   win.hide();
@@ -232,7 +392,7 @@
 				
 			}
 			minAppWin =  Ext.create('widget.window', {
-                title: 'App Selection',
+                title: 'Package Selection',
                 closable: true,
                 closeAction: 'hide',
                 width: 650,
@@ -248,17 +408,184 @@
                     floatable: false,
                     layout: 'form',
                     defaultType: 'textfield',
-                    items:  items
+                    items:  items,
+                    buttons: [{
+                        text: 'Reset',
+                        handler: function() {
+                            this.up('form').getForm().reset();
+                        }
+                    }, {
+                        text: 'Create',
+                        formBind: true, 
+                        disabled: true,
+                        handler: function() {
+                            var form = this.up('form').getForm();
+							var formData=form.getValues();
+							alert(formData.toSource());
+							formData.app={'id':miniApp.id};
+							var a=form.findField('jdbcURL').getValue();
+							var b=form.findField('jdbcDriver').getValue();
+							var c=form.findField('username').getValue();
+							var d=form.findField('password').getValue();
+							formData.dbConfig={'id':0, 'jdbcURL':a, 'jdbcDriver':b, 'username':c, 'password':d, 'name':miniApp.db};
+							var e=form.findField('inheritence').getValue();
+							var f=form.findField('association').getValue();
+							var g=form.findField('idgeneration').getValue();
+							formData.persistenceAPIConfig={'id':0, 'inheritence':e, 'association':f, 'idgeneration':g, 'name':miniApp.persistenceAPI};
+							formData.securityAPIConfig={'id':0, name:miniApp.securityAPI};
+							if(miniApp.securityStore=="LDAP"){
+								var h=form.findField('userProvider').getValue();
+								var i=form.findField('userFilter').getValue();
+								var j=form.findField('authzIdentity').getValue();
+								formData.securityStoreConfig={'lDAPConfig':{'id':0, 'userProvider':h, 'userFilter':i, 'authzIdentity':j, name:miniApp.securityStore}, 'id':0, name:miniApp.securityStore};
+							}
+							
+							else if(miniApp.securityStore=="Facebook"){
+								var h=formData.findField('clientId').getValue();
+								var i=formData.findField('clientSecret').getValue();
+								
+								formData.securityStoreConfig={'facebookConfig':{'id':0, 'clientId':h, 'clientSecret':i, name:miniApp.securityStore}, 'id':0, name:miniApp.securityStore};
+								
+								
+								
+							}
+							formData.name=miniApp.name;
+							formData.description=miniApp.description;
+							formData.id=0;
+							Ext.Ajax.request({
+		        				url : baseURL + 'AppConfig/',
+		        				method : 'POST',
+		        				headers : {
+		        					'Content-Type' : 'application/json'
+		        				},
+		        				jsonData : formData,
+		        				success :function() {alert("Yipee!! Success!");
+		        				
+		        					Ext.Ajax.request({
+		        						url: baseURL+'autogen/app/small/'+miniApp.id,
+		        						method: 'POST',
+		        						headers : {
+				        					'Content-Type' : 'application/json'
+				        				},
+				        				timeout:600000,
+				        				success:function() {
+				        				alert("App made success");
+				        				
+				        				Ext.getCmp('download').show();
+				        			
+				        				},
+				        				failure : function(){ alert("App not made");
+				        				 window.location.reload();
+				        				 }
+				        				});
+				        				},
+		        					
+		        				failure : function(){ alert("Failed");
+		        				 window.location.reload();}
+		        				
+		        				
+		        			});
+							
+							
+                           
+                        }
+                    
+                    
+                    
+                    }]
+                    
                 }]
 			});
+			
 			minAppWin.show(viewport,  function () {});
 			
 		}
+		
+	
+			win =  Ext.create('widget.window', {
+                title: 'Download',
+                closable: true,
+                closeAction: 'hide',
+                id:'download',
+                resizable: true,
+                draggable: true,
+                //animateTarget: this,
+                width: 100,
+                height: 100,
+                layout: 'border',
+                bodyStyle: 'padding: 5px;',
+             
+                	buttons: [{
+                        text: 'Download',
+                        handler: function() {
+                        	var test=window.open();
+                        	test.location='http://localhost:8080/desginer-web/download?fileName='+miniApp.name;
+
+        					/*Ext.Ajax.request({
+        						url: 'http://localhost:8080/desginer-web/download?fileName='+miniApp.name,
+        						method: 'GET',
+        						headers : {
+		        					'Content-Type' : 'application/json'
+		        				},
+		        				success:function() {
+		        				alert("File Download Successful");
+		        				
+		        				Ext.getCmp('download').show();
+		        			
+		        				},
+		        				failure : function(){ alert("File downlaod failed");
+		        				 window.location.reload();
+		        				 }
+		        				});*/
+                        }
+                }]
+            	
+			});
+			
+		
+
+
+
+		
+			
+			
+			/*function saveFileToDisk(url, dest, callback) {
+			    var xhr = new XMLHttpRequest();
+
+			    xhr.onload = function() {
+			        var typedData = new Uint8Array(xhr.response),
+			            ln = typedData.length,
+			            data = new Array(ln),
+			            result;
+
+			        for (var i = 0; i < ln; i++) {
+			            data[i] = typedData[i];
+			        }
+
+			        result = Ion.io.writeFile(dest, data);
+			        callback(result.success);
+			    };
+
+			    xhr.onerror = function() {
+			        callback(false);
+			    };
+
+			    xhr.open('GET', url);
+			    xhr.responseType = 'arraybuffer';
+			    xhr.send(null);
+			}*/
+		
+
+		
+		
+			
 		function newApp (item, e) {
 			win =  Ext.create('widget.window', {
 	                title: 'App Selection',
 	                closable: true,
 	                closeAction: 'hide',
+	                resizable: true,
+	                draggable: true,
 	                //animateTarget: this,
 	                width: 650,
 	                height: 550,
@@ -282,6 +609,11 @@
 	                            {
 	                            	name: 'description',
 	                            	fieldLabel: 'Description'
+	                            },
+	                            {
+	                            	name:'basePackage',
+	                            	fieldLabel:'Base Package'
+	                            	
 	                            },
 	                    	Ext.create('Ext.form.ComboBox', {
 	                    		name :'db',
@@ -366,7 +698,7 @@
 		}
 		var menu = Ext.create('Ext.menu.Menu', {
 	        items: [               
-	            {text: 'App' , handler: newApp },{text: 'Package'}, {text: 'Entity'},{text: 'Page'},{text: 'Menu'},'-', 
+	            {text: 'App' , handler: newApp },{text: 'Package', handler: newPackage}, {text: 'Entity', handler: newEntity },{text: 'Page'},{text: 'Menu'},'-', 
 	            {
 	                text: 'Config',
 	                menu: {        
@@ -458,8 +790,10 @@
 			addToViewPort(entityNewForm);
 		}
 
+		
 		function addNewType() {
-			var items = [ {
+			var items = [{ name : 'id', xtype: 'hiddenfield',allowBlank : false, value : 0},
+			   {
 				fieldLabel : 'Name',
 				name : 'name',
 				allowBlank : false
@@ -513,22 +847,40 @@
 
 		function modifyEntityForm(id) {
 
-			var entityForm = createForm('Modify Entity', 'entity/', getEntityFormItems(),submitCreateEntityFunction);
+			var entityForm = createForm('Modify Entity', 'entity/', getEntityFormItems(),submitCreateAttributeFunction);
 			
-			var columns = [{text : 'Id',dataIndex : 'id',editor: 'textfield'}, 
+			var columns = [ { text: 'id', dataIndex: 'id', hidden:true,  editor: 'textfield'},
 			               {text : 'Name',dataIndex : 'name',editor: 'textfield'}, 
 			               {text : 'Description',dataIndex : 'description',editor: 'textfield'},
-			               {text : 'Is Searchable',dataIndex : 'searchable',editor: 'textfield'},
+			             {text : 'Is Searchable',dataIndex : 'searchable',editor:new Ext.form.field.ComboBox({
+                               typeAhead:true,
+                               triggerAction:'all',
+                               store:optionStore,
+                               editable:true,
+                               selectOnTab:true,
+                               valueField: 'name',
+                               displayField: 'abbr'
+                               
+                               
+                            	})},
+                            	
 			               {text : 'Type',dataIndex : 'type',editor: new Ext.form.field.ComboBox({
                                typeAhead:true,
                                triggerAction:'all',
                                editable:true,
                                selectOnTab:true,
                                store:typeStore,
-                               displayField: 'name',
-                               valueField: 'name'
+                               name:'id',
+                               displayField: 'name', 
+                               valueField: 'id',
+                               queryMode : 'local'
+                            	
+                                      
                                
-                           })} ];
+                           })}
+                            	
+                            	];
+			
 
 			Ext.Ajax.request({
 				url : baseURL + 'entity/' + id,
@@ -544,9 +896,11 @@
 					var attributeStore = Ext.create('Ext.data.JsonStore', {
 				        model: 'EntityAttribute',
 				        data: data.entityAttributes
+				        
 				    });
-
-					var attributeGrid = createGrid('Attributes', attributeStore, columns); 
+				
+					
+					var attributeGrid = createGrid_attr('Attributes', attributeStore, columns, id,entityForm); 
 
 					entityForm.add(attributeGrid);
 					addToViewPort(entityForm);
@@ -589,11 +943,17 @@
 							formValues = form.getValues();
 						}
 						if (form.isValid()) {
-							ajaxRequest(form, resource, formValues);
+							ajaxRequest(form, resource, formValues,shandler);
 						}
+						
 					} 
 				} ]
 			});
+		}
+		function shandler()
+		{
+			//Ext.Msg.alert(Success);
+			window.location.reload();
 		}
 
 		function submitCreateEntityFunction() {
@@ -601,14 +961,18 @@
 			var form = formPanel.getForm();
             
 			var formValues = form.getValues();
- 
+			
+		  	//alert(formValues.toSource()); 
+			
 			formValues.parentPackage  = {'id': form.findField('parentPackage.id').getValue()  };
-			var gridRecords = formPanel.items.items[4].getStore().data.items;
+			var gridRecords = formPanel.items.items[3].getStore().data.items;
+			
 			var gridData = new Array();
 			for(var i =0; i < gridRecords.length ; i++)  {
 			      gridData.push(gridRecords[i].data);
 		    }
-			formValues.entityAttributes = gridData;
+			//formValues.entityAttributes = gridData;
+			alert(formValues.toSource());
 		    return formValues; 
 		}
 		
@@ -650,6 +1014,17 @@
 			containerCtxMenu.showAt(event.getXY());
 			event.stopEvent();
 		}, this);
+		
+		function newEntity(item, e) {
+			var entityNewForm = createForm('Add Entity', 'entity/',getEntityFormItems(), submitCreateEntityFunction);
+
+			addToViewPort(entityNewForm);
+		}
+		
+		function newPackage(item, e){
+			createPackageForm();
+			
+		}
 		
 		
 		

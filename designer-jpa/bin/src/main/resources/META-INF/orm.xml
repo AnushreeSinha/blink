@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
+	<persistence-unit-metadata>
+		<xml-mapping-metadata-complete />
+		<persistence-unit-defaults>
+
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	<package>com.blink.designer.model</package>
+	<mapped-superclass class="BaseBlinkModel"
+		metadata-complete="true">
+		<!-- <inheritance strategy="TABLE_PER_CLASS" /> -->
+		<attributes>
+			<id name="id">
+				<generated-value strategy="TABLE" />
+			</id>
+		</attributes>
+	</mapped-superclass>
+	<entity class="Entity" name="Entity" metadata-complete="true">
+		<attributes>
+			<one-to-many name="entityAttributes" fetch="EAGER">
+				<cascade>
+					<cascade-all />
+				</cascade>
+			</one-to-many>
+			<one-to-one name="parentPackage" fetch="EAGER" />
+		</attributes>
+	</entity>
+
+	<entity class="EntityAttribute" name="EntityAttribute">
+		<attributes>
+			<one-to-one name="type" fetch="EAGER" />
+		</attributes>
+	</entity>
+	<entity class="App" name="App">
+		<attributes>
+			<basic name="db">
+				<enumerated>STRING</enumerated>
+			</basic>
+
+			<basic name="persistenceAPI">
+				<enumerated>STRING</enumerated>
+			</basic>
+			<basic name="securityAPI">
+				<enumerated>STRING</enumerated>
+			</basic>
+			<basic name="securityStore">
+				<enumerated>STRING</enumerated>
+			</basic>
+			<basic name="frontend">
+				<enumerated>STRING</enumerated>
+			</basic>
+			<basic name="serviceAPIType">
+				<enumerated>STRING</enumerated>
+			</basic>
+
+		</attributes>
+	</entity>
+	<entity class="Type" name="Type">
+	</entity>
+	<entity class="Package" name="Package">
+		<attributes>
+			<one-to-one name="parentPackage" fetch="EAGER" />
+		</attributes>
+	</entity>
+
+</entity-mappings>

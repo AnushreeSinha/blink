@@ -2,6 +2,8 @@ package com.blink.designer.model;
 
 import java.util.List;
 
+
+
 public class Entity extends BaseBlinkModel{
 	
 	

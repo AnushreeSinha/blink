@@ -1,7 +1,12 @@
 package com.blink.designer.model;
 
-public class AppConfig {
+public class AppConfig extends BaseBlinkModel{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2990985096003199792L;
+
 	private App app;
 	
 	private DBConfig dbConfig;

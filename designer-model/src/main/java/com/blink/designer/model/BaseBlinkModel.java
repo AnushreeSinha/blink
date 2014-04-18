@@ -2,14 +2,12 @@ package com.blink.designer.model;
 
 import java.io.Serializable;
 
-
 public class BaseBlinkModel implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1937624936562296113L;
-	
 	private long id; 
 	private String name;
 	private String description;

@@ -1,3 +1,16 @@
+/*var typeStore = Ext.create('Ext.data.Store', {
+    fields: ['abbr', 'name'],
+    data : [
+        {"abbr":"INT", "name":"int"},
+        {"abbr":"DOUBLE", "name":"double"},
+        {"abbr":"FLOAR", "name":"float"},
+        {"abbr":"CHAR", "name":"char"}
+    ]
+});
+*/
+
+
+	
 var dbTypes = Ext.create('Ext.data.Store', {
     fields: ['abbr', 'name'],
     data : [
@@ -9,12 +22,21 @@ var dbTypes = Ext.create('Ext.data.Store', {
     ]
 });
 
+
 var persistenceAPITypes = Ext.create('Ext.data.Store', {
     fields: ['abbr', 'name'],
     data : [
         {"abbr":"JPA", "name":"JPA"},
         {"abbr":"JDO", "name":"JDO"},
         {"abbr":"HIBERNATE", "name":"Hibernate"}
+    ]
+});
+
+var optionStore = Ext.create('Ext.data.Store', {
+    fields: ['abbr', 'name'],
+    data : [
+        {"abbr":"no", "name":false},
+        {"abbr":"yes", "name":true}
     ]
 });
 
@@ -48,6 +70,7 @@ var frontendTypes = Ext.create('Ext.data.Store', {
 });
 
 
+
 var serviceAPITypes = Ext.create('Ext.data.Store', {
     fields: ['abbr', 'name'],
     data : [
@@ -57,6 +80,8 @@ var serviceAPITypes = Ext.create('Ext.data.Store', {
         {"abbr":"XMLHTTP", "name":"XML/HTTP"},
     ]
 });
+	
+
 
 
 Ext.create('Ext.form.ComboBox', {
@@ -78,22 +103,7 @@ Ext.create('Ext.form.ComboBox', {
     )
 });
 
-var typeStore = Ext.create('Ext.data.Store',{
-            autoLoad: true,
-            autoSync: true,
-            model: 'Type',
-            proxy: {
-                type: 'rest',
-                url: baseURL + 'type',
-                reader: {
-                    type: 'json',
-                },
-                writer: {
-                    type:'json'
-                }
-            }
-        });
-		
+
 		
 		var packageStore = Ext.create('Ext.data.Store', {
 		    model: 'Package2',
@@ -106,7 +116,20 @@ var typeStore = Ext.create('Ext.data.Store',{
 		        }
 		    },
 		    autoLoad: true
-		});
+		});  
+		var typeStore = Ext.create('Ext.data.Store', {
+		    model: 'Type',
+		    proxy: {
+		        type: 'ajax',
+		        url : baseURL +'type/',
+		        reader: {
+		            type: 'json',
+		            model: 'Type'
+		        }
+		    },
+		    autoLoad: true
+		});  
+		
 
 		var store = Ext.create('Ext.data.TreeStore', {
 			model : 'Package',

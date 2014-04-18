@@ -2,6 +2,7 @@ package com.blink.scm;
 
 import java.io.IOException;
 
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -21,7 +22,7 @@ public class SCMManagerTest {
 	AbstractApplicationContext context  = null;
 
 	@Test
-	public void scmTest() throws IOException, GitAPIException, RepositoryExistsException {
+	public void scmTest() throws IOException, GitAPIException, RepositoryExistsException, IOException, XmlPullParserException {
 
 		SCMManager scmManager = (SCMManager) context.getBean("scmManager");
 		scmManager.init();

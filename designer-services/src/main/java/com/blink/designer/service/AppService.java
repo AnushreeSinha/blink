@@ -21,6 +21,16 @@ import com.blink.model.generator.ModelGenerator;
 import com.blink.scm.RepositoryExistsException;
 import com.blink.scm.SCMManager;
 
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import org.apache.maven.cli.MavenCli;
+
+
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+
+
 
 @Path("/autogen/app")
 public class AppService {
@@ -46,7 +56,7 @@ public class AppService {
 
 	@POST
 	@Path("/{apptype}/{appid}")
-	public Response generateApp(@PathParam("appid") Long id, @PathParam("apptype") String apptype) throws GitAPIException, RepositoryExistsException {
+	public Response generateApp(@PathParam("appid") Long id, @PathParam("apptype") String apptype) throws GitAPIException, RepositoryExistsException, IOException, XmlPullParserException  {
 
 		App app = entityManager.find(App.class, id);
 
@@ -62,7 +72,32 @@ public class AppService {
 			String srcLocation = projectLocation + File.separator +app.getName() + File.separator +"src/main/java";
 
 			File jarName = modelGenerator.generateModel(app,srcLocation);
+			
+			URLClassLoader sysLoader;
+			URL u = null;
+			try {
 
+				File file = new File(jarName.getAbsolutePath());
+				u = file.toURI().toURL();
+				sysLoader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+
+				Class sysclass = URLClassLoader.class;
+				Class[] parameters = new Class[] { URL.class };
+				Method method = sysclass.getDeclaredMethod("addURL", parameters);
+
+				method.setAccessible(true);
+				method.invoke(sysLoader, new Object[] { u });
+
+				} 
+			catch (Throwable t) {
+				t.printStackTrace(System.err);
+				throw new IOException("Error, could not add file " + u.toExternalForm() + " to system classloader");
+				}
+
+
+
+			
+			
 			AppGenerator appGenerator = generators.get(apptype);
             String classPath = System.getProperty("java.class.path") +":" + jarName.getAbsolutePath(); 
 			System.setProperty("java.class.path", classPath);
@@ -71,6 +106,10 @@ public class AppService {
 
 			scmManager.createRemoteRepository(appName);
 			scmManager.pushFiles(appName);
+			MavenCli cli=new MavenCli();
+			int result = cli.doMain(new String[]{"package"},
+			projectLocation + File.separator +app.getName(),System.out, System.out);
+
 
 		} catch (ClassNotFoundException e1) {
 			return Response.status(500).build();

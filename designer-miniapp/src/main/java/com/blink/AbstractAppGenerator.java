@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.blink.designer.model.App;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
@@ -38,6 +39,7 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 	private File projectRepository;
 	private JDefinedClass config;
 	private JDefinedClass webConfig;
+	private String pathRepo;
 
 
 	public  AbstractAppGenerator(String packageName, String serviceName, String fileRepository) {
@@ -54,6 +56,7 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 		this.packageName = packageName;
 		this.serviceName = serviceName;
 		this.projectRepository = new File(fileRepository);
+		this.pathRepo=fileRepository;
 	}
 
 	protected void print() {
@@ -104,6 +107,8 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 			}
 		}
 		method.body()._return(JExpr.ref(fieldName));
+		
+		
 	}
 
 
@@ -274,7 +279,7 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 
 	protected abstract JDefinedClass createBizFacade(JCodeModel codeModel);
 	protected abstract JDefinedClass createDAOFacade(JCodeModel codeModel);
-	protected abstract JDefinedClass createConfig(JDefinedClass configClass) ;
+	protected abstract JDefinedClass createConfig(JDefinedClass configClass, String pathRepo, App app) ;
 	protected abstract JDefinedClass createServiceFacade(JCodeModel jCodeModel) throws JClassAlreadyExistsException, IOException ;
 	protected abstract void postConfig(JDefinedClass configClass);
 	protected abstract void createDOClasses(JCodeModel jCodeModel,Class<?> clazz)throws JClassAlreadyExistsException, IOException ; 
@@ -284,11 +289,11 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 		codeModel.build(new FileCodeWriter(projectRepository));
 	}
 
-	public JDefinedClass generateConfig() {
+	public JDefinedClass generateConfig(App app) {
 		try {
 			JDefinedClass definedClass = codeModel._class(getPackageName()+"config." + getServiceName()+"Config");
 			config = definedClass;
-			webConfig = createConfig(definedClass);
+			webConfig = createConfig(definedClass, pathRepo, app);
 			return definedClass;
 		} catch (JClassAlreadyExistsException e) {
 			e.printStackTrace();

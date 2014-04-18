@@ -5,5 +5,13 @@
     <artifactId>designer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>designer-model</artifactId>
+  <artifactId>designer-model</artifactId> 
+  <dependencies>
+  <dependency>
+    <groupId>javax.persistence</groupId>
+    <artifactId>persistence-api</artifactId>
+    <version>1.0.2</version>
+</dependency> 
+  </dependencies>
+          
 </project>

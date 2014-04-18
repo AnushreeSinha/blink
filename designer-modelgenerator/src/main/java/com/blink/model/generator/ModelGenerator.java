@@ -13,6 +13,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -26,6 +28,8 @@ import com.blink.designer.model.Type;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JType;
@@ -43,6 +47,12 @@ public class ModelGenerator {
 
 	public File generateModel(App app, String srcLocation) throws IOException, ClassNotFoundException {
 		JCodeModel codeModel = new JCodeModel();
+		 
+		if(entityManager == null)
+			System.out.println("entitymanager is null in model generator now 777");
+		else 
+			System.out.println("entitymanager is not null in model generator");
+		
 		List<Entity> entities = entityManager.createQuery("from com.blink.designer.model.Entity").getResultList();
 		for( Entity entity: entities) {
 			generateModel(codeModel,entity,app);
@@ -149,6 +159,19 @@ public class ModelGenerator {
 		for(EntityAttribute entityAttribute : entity.getEntityAttributes()) {
 			entityClass.field(JMod.PRIVATE, getType(codeModel,entityAttribute.getType().getName() ), entityAttribute.getName());
 		}
+		
+		entityClass.field(JMod.PRIVATE, Long.class, "id");
+		JMethod jMethod=entityClass.method(JMod.PUBLIC, Long.class, "getId");
+		jMethod.body()._return(JExpr.ref("id"));
+		
+		
+		
+		JMethod jMethod_2=entityClass.method(JMod.PUBLIC, void.class, "setId");
+		jMethod_2.param(Long.class, "id");
+		jMethod_2.body().assign(JExpr.refthis("id"), JExpr.ref("id"));
+		
+		
+		
 	}
 
 

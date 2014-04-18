@@ -20,19 +20,25 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 	</jaxrs:server>
 
 	<bean id="modelGenerator" class="com.blink.model.generator.ModelGenerator">
-		<property name="localRepo" value="/Users/asing20/localrepo/" />
+		<property name="localRepo" value="/Users/asinha1/localrepo/" />
+	</bean>
+	
+	<bean id="configGen" class="com.blink.ConfigGeneratorImpl">
 	</bean>
 
 	<bean id="blinkAppServiceBean" class="com.blink.designer.service.AppService">
 		<property name="generators" ref="generators" />
 		<property name="modelGenerator" ref="modelGenerator" />
 		<property name="scmManager" ref="scmManager" />
+		
 	</bean>
 	<util:map id="generators" map-class="java.util.HashMap">
 		<entry key="small" value-ref="smallAppGeneratorBean" />
 	</util:map>
 
 	<bean id="smallAppGeneratorBean" class="com.blink.MiniAppGenerator">
+	<property name="configGeneratorImpl" ref="configGen" />
+		
 	</bean>
 
 	<bean id="blinkCrudServiceBean" class="com.blink.designer.service.CRUDService">

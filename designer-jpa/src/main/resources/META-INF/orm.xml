@@ -34,6 +34,64 @@
 			<one-to-one name="type" fetch="EAGER" />
 		</attributes>
 	</entity>
+	
+	<entity class="AppConfig" name="AppConfig">
+	<attributes>
+	<one-to-one name="persistenceAPIConfig" fetch="EAGER">
+	<cascade>
+	<cascade-all/>
+	</cascade>
+	</one-to-one>
+	<one-to-one name="app" fetch="EAGER">
+	</one-to-one>
+	<one-to-one name="dbConfig" fetch="EAGER">
+	<cascade>
+	<cascade-all/>
+	</cascade>
+	</one-to-one>
+	<one-to-one name="securityStoreConfig" fetch="EAGER">
+	<cascade>
+	<cascade-all/>
+	</cascade></one-to-one>
+	<one-to-one name="securityAPIConfig" fetch="EAGER">
+	<cascade>
+	<cascade-all/></cascade>
+	</one-to-one>
+	</attributes>
+	</entity>
+	
+	<entity class="PersistenceAPIConfig" name="PersistenceAPIConfig">
+	</entity>
+	
+		
+	<entity class="DBConfig" name="DBConfig">
+	</entity>
+	
+	
+	<entity class="SecurityAPIConfig" name="SecurityAPIConfig">
+	</entity>
+
+	<entity class="FacebookConfig" name="FacebookConfig">
+	</entity>
+	
+	<entity class="LDAPConfig" name="LDAPConfig">
+	</entity>
+	
+	
+	
+	
+	<entity class="SecurityStoreConfig" name="SecurityStoreConfig">
+	<attributes>
+	<one-to-one name="lDAPConfig" fetch="EAGER">
+	<cascade>
+	<cascade-all/>
+	</cascade></one-to-one>
+	<one-to-one name="facebookConfig" fetch="EAGER">
+	<cascade>
+	<cascade-all/>
+	</cascade>
+	</one-to-one></attributes></entity>
+	
 	<entity class="App" name="App">
 		<attributes>
 			<basic name="db">
@@ -55,15 +113,20 @@
 			<basic name="serviceAPIType">
 				<enumerated>STRING</enumerated>
 			</basic>
-
+			
 		</attributes>
 	</entity>
+	
+		
 	<entity class="Type" name="Type">
 	</entity>
+	
 	<entity class="Package" name="Package">
 		<attributes>
 			<one-to-one name="parentPackage" fetch="EAGER" />
 		</attributes>
 	</entity>
+	
+	
 
 </entity-mappings>
