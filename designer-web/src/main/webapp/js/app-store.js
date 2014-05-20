@@ -35,8 +35,8 @@ var persistenceAPITypes = Ext.create('Ext.data.Store', {
 var optionStore = Ext.create('Ext.data.Store', {
     fields: ['abbr', 'name'],
     data : [
-        {"abbr":"no", "name":false},
-        {"abbr":"yes", "name":true}
+        {"abbr":"No", "name":false},
+        {"abbr":"Yes", "name":true}
     ]
 });
 
@@ -69,6 +69,15 @@ var frontendTypes = Ext.create('Ext.data.Store', {
     ]
 });
 
+var selectStore = Ext.create('Ext.data.Store', {
+    fields: ['abbr', 'name'],
+    data : [
+        {"abbr":"type", "name":"Primitive"},
+        {"abbr":"entity", "name":"Composite"},
+        
+    ]
+});
+
 
 
 var serviceAPITypes = Ext.create('Ext.data.Store', {
@@ -82,26 +91,6 @@ var serviceAPITypes = Ext.create('Ext.data.Store', {
 });
 	
 
-
-
-Ext.create('Ext.form.ComboBox', {
-    fieldLabel: 'Choose State',
-    store: dbTypes,
-    queryMode: 'local',
-    valueField: 'abbr',
-
-    tpl: Ext.create('Ext.XTemplate',
-        '<tpl for=".">',
-            '<div class="x-boundlist-item">{abbr} - {name}</div>',
-        '</tpl>'
-    ),
-    // template for the content inside text field
-    displayTpl: Ext.create('Ext.XTemplate',
-        '<tpl for=".">',
-            '{abbr} - {name}',
-        '</tpl>'
-    )
-});
 
 
 		
@@ -130,11 +119,58 @@ Ext.create('Ext.form.ComboBox', {
 		    autoLoad: true
 		});  
 		
+		var entityStore=Ext.create('Ext.data.Store', {
+		    model: 'Entity',
+		    proxy: {
+		        type: 'ajax',
+		        url : baseURL +'entity/',
+		        reader: {
+		            type: 'json',
+		            model: 'Entity'
+		        }
+		    },
+		    autoLoad: true
+		});  
+		
+	 
+		var collectionStore = Ext.create('Ext.data.Store', {
+		    fields: ['abbr', 'name'],
+		    data : [
+		        {"abbr":"list", "name":"List"},
+		        {"abbr":"set", "name":"Set"},
+		        {"abbr":"null", "name":"null"},
+		        
+		        
+		    ]
+		});
+
+		var validStore = Ext.create('Ext.data.Store', {
+		    fields: ['abbr', 'name'],
+		    data : [
+		        {"abbr":"size", "name":"Size"},
+		        {"abbr":"email", "name":"Email"},
+		        {"abbr":"creditCard", "name":"CreditCard"},
+		        {"abbr":"assertTrue", "name":"AssertTrue"},
+		        {"abbr":"assertFalse", "name":"AssertFalse"},
+		     
+		        
+		        
+		    ]
+		});
+		
 
 		var store = Ext.create('Ext.data.TreeStore', {
 			model : 'Package',
 			root : {
 				name : 'Package',
 				expanded : true
-			}
+			},
+//		 proxy: {
+//	            type: 'ajax',
+//	            type : 'json',
+//	            root : 'data',
+//	            	url : 'jsontreestruct.do'
+//	            
+//
+//	           }
 		});

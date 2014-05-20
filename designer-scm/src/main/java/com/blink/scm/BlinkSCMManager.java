@@ -140,6 +140,10 @@ public class BlinkSCMManager implements SCMManager {
 		Dependency d9=new Dependency();
 		Dependency d10=new Dependency();
 		Dependency d12=new Dependency();
+		Dependency d13=new Dependency();
+		Dependency d14=new Dependency();
+		Dependency d15=new Dependency();
+		
 		
 		d.setGroupId("javax.persistence"); 
 		d.setArtifactId("persistence-api"); 
@@ -200,6 +204,23 @@ public class BlinkSCMManager implements SCMManager {
 		d12.setArtifactId("log4j");
 		d12.setVersion("1.2.12");
 		model.addDependency(d12);
+		
+		d13.setGroupId("javax.validation");
+		d13.setArtifactId("validation-api");
+		d13.setVersion("1.0.0.GA");
+		model.addDependency(d13);
+		
+		d14.setGroupId("org.hibernate");
+		d14.setArtifactId("hibernate-validator");
+		d14.setVersion("4.3.1.Final");
+		model.addDependency(d14);
+		
+		d15.setGroupId("org.hibernate");
+		d15.setArtifactId("hibernate-commons-annotations");
+		d15.setVersion("3.2.0.Final");
+		model.addDependency(d15);
+		
+	
 
 		
 		

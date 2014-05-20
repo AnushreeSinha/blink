@@ -15,6 +15,6 @@ public class AppGeneratorTest {
 		app.setBasePackage("com.campusanytime.model.");
 		app.setName("CampusAnytime");
 		AbstractAppGenerator enumerator = new MiniAppGenerator();
-		enumerator.generateApp(app,"/Users/asinha1/Documents/workspace");
+		enumerator.generateApp(app,"/Users/rpoosar/Documents/workspace");
 	}
 }

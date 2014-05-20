@@ -1,6 +1,8 @@
 package com.blink;
 
 
+import javax.persistence.PersistenceContext;
+
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JFieldVar;
@@ -12,8 +14,10 @@ public class DAOMethodGeneratorImpl implements DAOMethodGenerator{
 	JFieldVar entityManagerField ;
 
 	public void generateAllDAOMethods(JDefinedClass serviceClass,JDefinedClass daoDataClass) {
-		if( entityManagerField == null)
+		if( entityManagerField == null){
 			entityManagerField = serviceClass.field(JMod.PRIVATE, javax.persistence.EntityManager.class, "entityManager");
+			entityManagerField.annotate(PersistenceContext.class);
+		}
 
 		getCreateDAOMethod(serviceClass,daoDataClass);
 
@@ -56,7 +60,7 @@ public class DAOMethodGeneratorImpl implements DAOMethodGenerator{
 		//com.pizza.jpa.BookJPA bookJPA=entityManager.find(com.pizza.jpa.BookJPA.class, id);
 		method.body().directStatement(daoDataClass.fullName()+" "+CodeUtil.camelCase(daoDataClass.name()+"=entityManager.find("+daoDataClass.fullName()+".class, id);"));
         
-		method.body().directStatement("entityManager.remove("+ daoDataClass.name()+".class);");
+		method.body().directStatement("entityManager.remove("+ CodeUtil.camelCase(daoDataClass.name())+");");
 	}
 
 }

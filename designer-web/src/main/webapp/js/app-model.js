@@ -22,7 +22,7 @@
 		
 		Ext.define('EntityAttribute', {
 			 extend: 'Ext.data.Model',
-		     fields : ['id','name','description','searchable','type']
+		     fields : ['id','name','description','searchable','dataType','primitiveId','compositeId','primaryKey','multiType','isRequired','validations']
 		} );
 		
 		
@@ -43,3 +43,12 @@
 			 fields : ['id','className','name','description']
 		});
 		
+		Ext.define('Entity' , {
+			 extend: 'Ext.data.Model',
+			 fields : ['id','description','name','parentPackage_id']
+		});
+		
+//		Ext.define('Validations' , {
+//			 extend: 'Ext.data.Model',
+//			 fields : ['id', 'assertTrue', 'assertFalse', 'email','creditCard', 'size','email','creditCard','assertTrue', 'assertFalse']
+//		});

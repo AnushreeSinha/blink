@@ -25,10 +25,12 @@ import com.blink.designer.model.App;
 import com.blink.designer.model.Entity;
 import com.blink.designer.model.EntityAttribute;
 import com.blink.designer.model.Type;
+import com.mysql.jdbc.StringUtils;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JPackage;
@@ -157,29 +159,70 @@ public class ModelGenerator {
 		}
 
 		for(EntityAttribute entityAttribute : entity.getEntityAttributes()) {
-			entityClass.field(JMod.PRIVATE, getType(codeModel,entityAttribute.getType().getName() ), entityAttribute.getName());
+			
+			JFieldVar typeClass; 
+			Type typeId = null;
+			String fieldName = null;
+			JType type = null;
+	
+		if(entityAttribute.getPrimitiveId()!=null){
+		System.out.println("Revlon");
+		System.out.print(entityAttribute.getName());
+		typeClass = entityClass.field(JMod.PRIVATE, getPrimitiveType(codeModel,entityAttribute.getPrimitiveId().getName() ), entityAttribute.getName());
+		typeId =entityAttribute.getPrimitiveId();
+		fieldName =entityAttribute.getName();
+		type=getPrimitiveType(codeModel,entityAttribute.getPrimitiveId().getName());
 		}
+		
+		else if(entityAttribute.getCompositeId()!=null && entityAttribute.getMultiType().equals("null")){
+			System.out.println("Rev123");
+			System.out.print(entityAttribute.getName());
+			typeClass = entityClass.field(JMod.PRIVATE, getCompositeType(codeModel,entityAttribute.getCompositeId().getName() ), entityAttribute.getName());
+			typeId =entityAttribute.getPrimitiveId();
+			fieldName =entityAttribute.getName();
+			type=getCompositeType(codeModel,entityAttribute.getCompositeId().getName() );
+		}
+		
+		else if(entityAttribute.getCompositeId()!=null && !entityAttribute.getMultiType().equals("null")){
+			System.out.println("Revlon456");
+			System.out.print(entityAttribute.getName());
+			typeClass = entityClass.field(JMod.PRIVATE, getMultiType(codeModel, entityAttribute.getMultiType(), entityAttribute.getCompositeId().getName() ), entityAttribute.getName());
+			typeId =entityAttribute.getPrimitiveId();
+			fieldName =entityAttribute.getName();
+			type=getMultiType(codeModel,entityAttribute.getMultiType(), entityAttribute.getCompositeId().getName());
+		}
+		
+		String getterName = ("java.lang.Boolean".equals(typeId) ? "is" : "get")+ String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
+		JMethod getterMethod = entityClass.method(JMod.PUBLIC, type, getterName ); getterMethod.body()._return(JExpr.ref(fieldName)); 
+		String setterName = ("java.lang.Boolean".equals(typeId) ? "is" : "set")+ String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1); 
+		JMethod setterMethod = entityClass.method(JMod.PUBLIC,void.class,setterName ); setterMethod.param(type, fieldName); 
+		setterMethod.body().assign(JExpr.refthis(fieldName), JExpr.ref(fieldName));
+		}
+		
 		
 		entityClass.field(JMod.PRIVATE, Long.class, "id");
 		JMethod jMethod=entityClass.method(JMod.PUBLIC, Long.class, "getId");
 		jMethod.body()._return(JExpr.ref("id"));
 		
-		
-		
 		JMethod jMethod_2=entityClass.method(JMod.PUBLIC, void.class, "setId");
 		jMethod_2.param(Long.class, "id");
 		jMethod_2.body().assign(JExpr.refthis("id"), JExpr.ref("id"));
 		
-		
-		
+	}
+	
+	private JType getMultiType(JCodeModel codeModel, String name, String compName ) throws ClassNotFoundException {
+		return codeModel.parseType("java.util."+name+"<"+compName+">");
 	}
 
 
-	private JType getType(JCodeModel codeModel, String name ) throws ClassNotFoundException {
+	private JType getPrimitiveType(JCodeModel codeModel, String name ) throws ClassNotFoundException {
 		Type type = (Type) entityManager.createQuery("from com.blink.designer.model.Type where name = '" + name+"'").getSingleResult() ;
 		return codeModel.parseType(type.getClassName());
 	}
 
+	private JType getCompositeType(JCodeModel codeModel, String name) throws ClassNotFoundException {
+		return codeModel.parseType(name);
+	}
 	protected JPackage getPackage(JCodeModel codeModel , String packageName) {
 		return codeModel._package(packageName);
 	}

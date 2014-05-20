@@ -64,6 +64,7 @@ function loadApplet(code,codebase,width,height){
 	<script type="text/javascript" src="js/app-store.js"></script>
 	<script>
 	   
+	var value1, value2;
 		function createGrid(title, store, columns) {
 			  return	Ext.create('Ext.grid.Panel', {
 			        title: title,
@@ -177,35 +178,98 @@ function loadApplet(code,codebase,width,height){
 			    });
 	    }
 		
-		function submitCreateAttributeFunction()
-		{
-			var formPanel = this.up('form');
-			var form = formPanel.getForm();
-            var formValues = form.getValues();
-			formValues.parentPackage  = {'id': form.findField('parentPackage.id').getValue()  };
-			var gridData = new Array();
-			for (var j=0; j<=Ext.getCmp('Attributes').getStore().getCount()-1; j++) {
-			   Ext.getCmp('Attributes').getSelectionModel().select(j,true);
-			   if(Ext.getCmp('Attributes').store.getAt(j).data.type < 100)
-				 {
-			       var typeid=Ext.getCmp('Attributes').store.getAt(j).data.type;
-			       Ext.getCmp('Attributes').store.getAt(j).data.type={'id':typeid};
-			     }
-			    if(Ext.getCmp('Attributes').getSelectionModel().isSelected(j)){
-			    	if(Ext.getCmp('Attributes').store.getAt(j).data.id > 0)
-		               gridData.push(Ext.getCmp('Attributes').store.getAt(j).data);
-			    	else{
-			    		Ext.getCmp('Attributes').store.getAt(j).data.id=0;
-			    		gridData.push(Ext.getCmp('Attributes').store.getAt(j).data);
-			    	}
-			    		
-		      }
-			   
-			                }
-			formValues.entityAttributes = gridData;
-		    return formValues; 
-
-		}
+		function submitCreateAttributeFunction() { 
+			var formPanel = this.up('form'); 
+			var form = formPanel.getForm(); 
+			var formValues = form.getValues(); 
+			
+			formValues.parentPackage = {'id': form.findField('parentPackage.id').getValue() 
+					};
+			alert("in submitcreateattributefunction()");
+			
+			var gridData = new Array(); 
+			
+			alert("Attributes are "+Ext.getCmp('Attributes').store.getAt(0).data.toSource()); 
+			for (var j=0; j<=Ext.getCmp('Attributes').getStore().getCount()-1; j++)
+			{ 
+				var valJSON=null;
+				var validations_arr=new Array();
+				/* validations_arr=null; */
+				Ext.getCmp('Attributes').getSelectionModel().select(j,true); 
+				if(Ext.getCmp('Attributes').store.getAt(j).data.dataType == "Primitive"){ 
+					if(Ext.getCmp('Attributes').store.getAt(j).data.primitiveId >= 0) { 
+						var typeid=Ext.getCmp('Attributes').store.getAt(j).data.primitiveId; 
+						Ext.getCmp('Attributes').store.getAt(j).data.primitiveId={'id':typeid}; 
+						} 
+					Ext.getCmp('Attributes').store.getAt(j).data.compositeId=null; 
+					}
+				else if(Ext.getCmp('Attributes').store.getAt(j).data.dataType == "Composite"){ 
+					if(Ext.getCmp('Attributes').store.getAt(j).data.compositeId >= 0) { 
+						var typeid=Ext.getCmp('Attributes').store.getAt(j).data.compositeId; 
+						Ext.getCmp('Attributes').store.getAt(j).data.compositeId={'id':typeid}; 
+						}
+					Ext.getCmp('Attributes').store.getAt(j).data.primitiveId=null; 
+					}
+				else if(Ext.getCmp('Attributes').store.getAt(j).data.compositeId == ""){
+					Ext.getCmp('Attributes').store.getAt(j).data.compositeId=null;
+				}
+				else if(Ext.getCmp('Attributes').store.getAt(j).data.primitiveId == ""){
+					Ext.getCmp('Attributes').store.getAt(j).data.primitiveId=null;
+				}
+				
+			if(Ext.getCmp('Attributes').store.getAt(j).data.validations.id>=0){}
+			else{
+				alert("Validations array before insertion "+validations_arr);
+				
+				for(var m=0;m<Ext.getCmp('Attributes').store.getAt(j).data.validations.length;m++){
+					validations_arr.push(Ext.getCmp('Attributes').store.getAt(j).data.validations[m]);
+				}
+				
+				alert("Validations array after insertion  "+validations_arr);
+				
+				
+				for( var a=0;a<validations_arr.length;a++){
+					if(valJSON!=null)
+						valJSON+=",";
+					if(validations_arr[a]=="size"){
+						if(valJSON!=null)
+							
+							
+							valJSON+=" \"size\":{ \"minSize\":"+value1+",\"maxSize\":"+value2+"}";
+						else
+							valJSON=" \"size\":{ \"minSize\":"+value1+",\"maxSize\":"+value2+"}";
+						alert("valJSON is size "+valJSON);
+					}
+					else{
+						if(valJSON!=null)
+							valJSON+="\""+validations_arr[a]+"\":"+true;
+						else
+							valJSON="\""+validations_arr[a]+"\":"+true;
+					}
+				}
+				Ext.getCmp('Attributes').store.getAt(j).data.validations="{\"id\":"+0+","+valJSON+"}";
+				alert(Ext.getCmp('Attributes').store.getAt(j).data.validations);
+				var ob=JSON.parse(Ext.getCmp('Attributes').store.getAt(j).data.validations);
+				Ext.getCmp('Attributes').store.getAt(j).data.validations=ob;
+			}
+				if(Ext.getCmp('Attributes').getSelectionModel().isSelected(j)){ 
+					if(Ext.getCmp('Attributes').store.getAt(j).data.id > 0) 
+						gridData.push(Ext.getCmp('Attributes').store.getAt(j).data); 
+				
+					else{ 
+						Ext.getCmp('Attributes').store.getAt(j).data.id=0; 
+					gridData.push(Ext.getCmp('Attributes').store.getAt(j).data); 
+					} 
+					
+		
+			    }
+			    
+			}
+			formValues.entityAttributes = gridData; 
+			
+			return formValues; 
+			} 
+		
 	  		
 	  		
 		function getEntityFormItems() {
@@ -844,6 +908,26 @@ function loadApplet(code,codebase,width,height){
 
 			addToViewPort(packageForm);
 		}
+		
+		var popup = new Ext.Panel({
+		    floating: true,
+		    centered: true,
+		    modal: true,
+		    width: 300,
+		    height: 400,
+		    showAnimation: { type: 'slide', direction: 'left'},
+		    styleHtmlContent: true,
+		    html: 'Welcome', //Here i want to get username
+		    items:[{
+		    	xtype: 'button',
+		    	text: 'Close',
+		    	ui: 'confirm',
+		    	docked: 'bottom',
+		    	handler: function() {
+		    		popup.hide({type: 'slideOut', direction: 'right'});
+		    	}
+		    }]
+		});
 
 		function modifyEntityForm(id) {
 
@@ -864,7 +948,42 @@ function loadApplet(code,codebase,width,height){
                                
                             	})},
                             	
-			               {text : 'Type',dataIndex : 'type',editor: new Ext.form.field.ComboBox({
+                            {text : 'DataType',dataIndex : 'dataType',editor: new Ext.form.field.ComboBox({
+                                typeAhead:true,
+                                triggerAction:'all',
+                                editable:true,
+                                selectOnTab:true,
+                                store:selectStore,
+                                name:'id',
+                                displayField: 'name', 
+                                valueField: 'name',
+                                queryMode : 'local', 
+                                
+                            	listConfig: {
+                                	listeners: {
+                                        itemclick: function(list, record, combo) {
+                                        	var combo1=Ext.getCmp('Comp'); 
+                                        	var combo2=Ext.getCmp('Prim'); 
+                                           if(record.get('name')=="Primitive"){
+                                        	   combo2.enable();   
+                                               combo1.disable();
+                                        	   
+                                         	 
+                                           }
+                                           else{
+                                        	   combo1.enable();   
+                                               combo2.disable();
+                                        	   
+                                        	   
+                                           }
+                                         
+                                        }
+                                    }} 
+                            })},
+                            		
+                          
+                            	
+                            { text : 'Primitive',dataIndex : 'primitiveId',editor: new Ext.form.field.ComboBox({
                                typeAhead:true,
                                triggerAction:'all',
                                editable:true,
@@ -873,11 +992,141 @@ function loadApplet(code,codebase,width,height){
                                name:'id',
                                displayField: 'name', 
                                valueField: 'id',
-                               queryMode : 'local'
-                            	
-                                      
+                               queryMode : 'local',
+                               id:'Prim',
+                               lastQuery:''
+               
+                           
+                           })},
+                           { text : 'Composite',dataIndex : 'compositeId',editor: new Ext.form.field.ComboBox({
+                               typeAhead:true,
+                               triggerAction:'all',
+                               editable:true,
+                               selectOnTab:true,
+                               store:entityStore,
+                               name:'id',
+                               displayField: 'name', 
+                               valueField: 'id',
+                               queryMode : 'local',
+                               id:'Comp',
+                               lastQuery:''
+                           
+                           })},
+                           
+                           {text : 'Is Primary Key',dataIndex : 'primaryKey',editor:new Ext.form.field.ComboBox({
+                               typeAhead:true,
+                               triggerAction:'all',
+                               store:optionStore,
+                               editable:true,
+                               selectOnTab:true,
+                               valueField: 'name',
+                               displayField: 'abbr'
                                
-                           })}
+                               
+                            	})},
+                           
+                           {text : 'Multitype',dataIndex : 'multiType',editor:new Ext.form.field.ComboBox({
+                               typeAhead:true,
+                               triggerAction:'all',
+                               store:collectionStore,
+                               editable:true,
+                               selectOnTab:true,
+                               valueField: 'name',
+                               displayField: 'abbr',
+                               
+                               
+                            	})}, 
+                            	
+                            	 {text : 'Is Required',dataIndex : 'isRequired',editor:new Ext.form.field.ComboBox({
+                                     typeAhead:true,
+                                     triggerAction:'all',
+                                     store:optionStore,
+                                     editable:true,
+                                     selectOnTab:true,
+                                     valueField: 'name',
+                                     displayField: 'abbr',
+                                     
+                                     
+                                  	})},
+                                  	
+                                  	 {text : 'Validations',dataIndex : 'validations',editor:new Ext.form.field.ComboBox({
+                                         typeAhead:true,
+                                         triggerAction:'all',
+                                         store:validStore,
+                                         multiSelect: true,
+                                         emptyText : "Select validations",
+                                         editable:true,
+                                         selectOnTab:true,
+                                         editable: false,
+                                         mode: 'local',
+                                         triggerAction: 'all',
+                                         valueField: 'abbr',
+                                         displayField: 'name',
+                                         listeners:
+                                         {
+                                        	 'select':function(combo, records, eOpts){
+                                        	 if(combo.getValue()=="size"){
+                                        		 win = new Ext.Window({
+                                        			    title: 'Add',
+                                        			    layout: 'anchor',
+                                        			    autoScroll: true,
+                                        			    y: 120,
+                                        			    width: 200,
+                                        			    height: 200,
+                                        			    modal: true,
+                                        			    closeAction: 'hide',
+                                        			    items: [{
+                                        			    	xtype: 'textfield',
+                                        			    	id:'min',
+                                        			    	 fieldLabel:'min'},
+                                        			    	 {
+                                        			    		 xtype: 'textfield',
+                                        			    		id:'max',
+                                        			    		fieldLabel:'max'
+                                        			    		}],
+                                        			    		buttons : [{
+                                        			    			text : 'Reset',
+                                        			    			handler : function() {
+                                        			    			Ext.getCmp('min').reset();
+                                        			    			Ext.getCmp('max').reset();
+                                        			    			}
+                                        			    			}, {
+                                        			    			text : 'Submit',
+                                        			   				handler:function(){
+                                        			    			value1=Ext.getCmp('min').value;
+                                        			    			value2=Ext.getCmp('max').value;
+                                        			    			this.up('.window').close();
+                                        			   				alert("Min is "+value1+" And max is "+value2);
+                                        			    		}
+                                        			    	}]
+                                        		 });
+                                        			win.show();
+                                        	 }
+                                        	 }
+                                  	 }
+                                  	 })}
+		
+                                       
+                                        	 
+                                         
+                                         
+                                      
+                                      	
+                                          
+                               
+               					/*  {text : 'Mask',dataIndex : 'mask',editor:new Ext.form.field.ComboBox({
+                                         typeAhead:true,
+                                         triggerAction:'all',
+                                         
+                                         editable:true,
+                                         selectOnTab:true,
+                                         valueField: 'name',
+                                         displayField: 'abbr'
+                                         
+                                         
+                                      	})}
+                                      	 */
+                                  	
                             	
                             	];
 			
@@ -892,14 +1141,16 @@ function loadApplet(code,codebase,width,height){
 					form.findField('name').setValue(data.name);
 					form.findField('description').setValue(data.description);
 				    form.findField('parentPackage.id').setValue(data.parentPackage.id);
+				    
+				    
+				    
 					
 					var attributeStore = Ext.create('Ext.data.JsonStore', {
 				        model: 'EntityAttribute',
 				        data: data.entityAttributes
-				        
+				      
 				    });
 				
-					
 					var attributeGrid = createGrid_attr('Attributes', attributeStore, columns, id,entityForm); 
 
 					entityForm.add(attributeGrid);
@@ -953,7 +1204,7 @@ function loadApplet(code,codebase,width,height){
 		function shandler()
 		{
 			//Ext.Msg.alert(Success);
-			window.location.reload();
+			//window.location.reload();
 		}
 
 		function submitCreateEntityFunction() {

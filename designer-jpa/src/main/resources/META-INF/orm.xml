@@ -31,7 +31,13 @@
 
 	<entity class="EntityAttribute" name="EntityAttribute">
 		<attributes>
-			<one-to-one name="type" fetch="EAGER" />
+			<one-to-one name="primitiveId" fetch="EAGER" />
+			<one-to-one name="compositeId" fetch="EAGER"/>
+			<one-to-one name="validations" fetch="EAGER">
+			<cascade>
+					<cascade-all />
+			</cascade>
+			</one-to-one>
 		</attributes>
 	</entity>
 	
@@ -77,6 +83,30 @@
 	<entity class="LDAPConfig" name="LDAPConfig">
 	</entity>
 	
+	<entity class="Validations" name="Validations">
+	<attributes>
+			<id name="id">
+			
+			<generated-value strategy="TABLE" /> 
+			</id>
+			<one-to-one name="size" fetch="EAGER">	
+	<cascade>
+	<cascade-all />
+	</cascade>
+	</one-to-one>
+		</attributes>
+		
+	</entity>
+	
+	<entity class="Size" name="Size">
+	<attributes>
+			<id name="id">
+<generated-value strategy="TABLE" /> 
+			</id>
+		</attributes>
+	
+	</entity>
+	
 	
 	
 	
@@ -119,6 +149,7 @@
 	
 		
 	<entity class="Type" name="Type">
+	
 	</entity>
 	
 	<entity class="Package" name="Package">

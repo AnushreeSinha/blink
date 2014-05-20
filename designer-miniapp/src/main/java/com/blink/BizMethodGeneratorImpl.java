@@ -2,6 +2,8 @@ package com.blink;
 
 import static com.blink.CodeUtil.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
@@ -15,8 +17,10 @@ public class BizMethodGeneratorImpl implements BizMethodGenerator{
 	JFieldVar mapperField; 
 
 	public void generateAllBizMethods(JDefinedClass serviceClass, Class<?> bizClass) {
-		if( mapperField == null)
+		if( mapperField == null){
 			mapperField = serviceClass.field(JMod.PRIVATE,org.dozer.Mapper.class, "mapper");
+			mapperField.annotate(Autowired.class);
+		}
 		getCreateBizMethod(serviceClass,bizClass);
 		getReadBizMethod(serviceClass,bizClass);
 		getUpdateBizMethod(serviceClass,bizClass);

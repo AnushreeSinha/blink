@@ -35,6 +35,14 @@ public class CodeUtil {
 		return j;
 	}
 	
+	public static JInvocation gettoJsonMethodInvocation(JFieldVar field) {
+		JInvocation j= field.invoke("toJson");
+		j.arg(field);
+		return j;
+	}
+	
+	
+	
 	public static void addAutowiredField(JDefinedClass definedClass,JDefinedClass field) {
 		String fieldName = CodeUtil.camelCase(field.name());
 		JFieldVar var = definedClass.field(JMod.PRIVATE, field, fieldName);

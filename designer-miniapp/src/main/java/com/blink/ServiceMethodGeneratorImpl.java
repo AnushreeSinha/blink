@@ -8,6 +8,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -26,8 +28,10 @@ public class ServiceMethodGeneratorImpl implements ServiceMethodGenerator{
 	}
 
 	public void generateAllServiceMethods(JDefinedClass serviceClass, JDefinedClass serviceDataClass) {
-		if( mapperField == null)
+		if( mapperField == null){
 			mapperField = serviceClass.field(JMod.PRIVATE,org.dozer.Mapper.class, "mapper");
+		mapperField.annotate(Autowired.class);
+		}
 		getCreateServiceMethod(serviceClass,serviceDataClass);
 		getReadServiceMethod(serviceClass,serviceDataClass);
 		getUpdateServiceMethod(serviceClass,serviceDataClass);
@@ -57,7 +61,7 @@ public class ServiceMethodGeneratorImpl implements ServiceMethodGenerator{
 		param.annotate(javax.ws.rs.PathParam.class).param("value", "id");
 
 		//annotateMethod(javax.ws.rs.GET.class,method,"/get" + serviceDataClass.name()+"/{id}");
-		annotateMethod(javax.ws.rs.GET.class,method, serviceDataClass.name()+"/");
+		annotateMethod(javax.ws.rs.GET.class,method, serviceDataClass.name()+"/{id}");
 		String bizClassName =  getBizClassFromDTO(serviceDataClass,PackageType.DTO);
 		JClass type = serviceClass.owner().ref(bizClassName);
 		

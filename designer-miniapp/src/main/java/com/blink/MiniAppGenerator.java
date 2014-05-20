@@ -8,10 +8,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.blink.designer.model.App;
+import com.blink.designer.model.Entity;
+import com.blink.designer.model.EntityAttribute;
+import com.blink.designer.model.Type;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JClassAlreadyExistsException;
@@ -21,6 +28,13 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.grizzly.util.http.mapper.Mapper;
+
+import javax.validation.constraints.*;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.CreditCardNumber;
+
+
 
 public class MiniAppGenerator extends AbstractAppGenerator {
 
@@ -29,7 +43,10 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 	private DAOMethodGenerator daoMethodGenerator;	
 	
 	@Autowired
-	private ConfigGeneratorImpl configGeneratorImpl;  
+	private ConfigGeneratorImpl configGeneratorImpl; 
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 	
 	public MiniAppGenerator() {
 		init();
@@ -88,20 +105,33 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 		definedClass.annotate(javax.persistence.Entity.class);
 		JAnnotationUse annotationUse = definedClass.annotate(javax.persistence.Table.class) ;
 		annotationUse.param("name", clazz.getSimpleName());
-
+		System.out.println("Water is here");
 		Map<String,JFieldVar> fields = definedClass.fields();
 		Iterator<String> i = fields.keySet().iterator();
 		System.out.println("These are motog fields");
 		while ( i.hasNext()) {
 			JFieldVar field = fields.get(i.next());
-			System.out.println(field);
+			System.out.println("$$$$$$$$$$$$");
+			System.out.println("Fields in MiniAppGenerator Class Malayalam"+field);
+			System.out.println("$$$$$$$$$$$$");
+			System.out.println(field.type());
 			if( field.type().isPrimitive()) {
-
-			}else if(field.type().binaryName().startsWith(getPackageName()) )
+			}
+			else if(field.type().binaryName().startsWith(getPackageName()) )
 				field.annotate(javax.persistence.OneToOne.class);
 			else if (((JClass)codeModel._ref(java.util.Collection.class)).isAssignableFrom((JClass)field.type())) {
-				field.annotate(javax.persistence.OneToMany.class);
+				//field.annotate(javax.persistence.OneToMany.class);
+				JAnnotationUse fetch=field.annotate(javax.persistence.OneToMany.class);
+				fetch.param("fetch",javax.persistence.FetchType.EAGER);
 			}
+		
+//			EntityAttribute entityAttribute=(EntityAttribute)entityManager.createQuery("from com.blink.designer.model.EntityAttribute where name="+field).getSingleResult();
+//			System.out.println("##############");
+//			System.out.println("Tamil entityAttribute is "+ entityAttribute);
+//			System.out.println("##############");
+//			if(entityAttribute.getIsRequired()==true){
+//				field.annotate(javax.validation.constraints.NotNull.class);	
+//			}
 		}
 	}
 
@@ -116,25 +146,76 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 
 	private JDefinedClass createClasses(JCodeModel codeModel,Class<?> clazz, PackageType packageType)
 			throws JClassAlreadyExistsException, IOException {
+	
 
 		JDefinedClass foo =  getDefinedClass(codeModel,clazz,packageType);//Creates a new class
 
 		Field[] fields = clazz.getDeclaredFields();
 		for ( int i=0 ; i < fields.length; i++) {
+			
 			Field field = fields[i];
+			JFieldVar fId = null;
 			if( field.getType().getName().startsWith(getPackageName())) {
-				foo.field(JMod.PRIVATE, getDefinedClass(codeModel,field.getType(), packageType), field.getName());
-			}else {
-
+				fId=foo.field(JMod.PRIVATE, getDefinedClass(codeModel,field.getType(), packageType), field.getName());
+				}
+			else {
 				if(field.getType().getTypeParameters().length == 0) {
-					JFieldVar fId=foo.field(JMod.PRIVATE, field.getType(), field.getName());
-					if(packageType.toString() == PackageType.DO.toString() && (field.getName().contains("_id") || field.getName().contains("Id"))){
+					fId=foo.field(JMod.PRIVATE, field.getType(), field.getName());
+					System.out.println("Value of JFieldVar in second if petunia. Its is second if "+fId.name());
+					if(packageType.toString() == PackageType.DO.toString() && (field.getName().contains("id") || field.getName().contains("Id")))
 						fId.annotate(javax.persistence.Id.class);
 					}
-					} else {
-					foo.field(JMod.PRIVATE,getParameterizedClass(codeModel,field,packageType),field.getName());
-				}
+				else
+					{
+						fId=foo.field(JMod.PRIVATE,getParameterizedClass(codeModel,field,packageType),field.getName());
+					}
 			}
+			String name=fId.name();
+			if(name.equalsIgnoreCase("id")){
+				;
+			}
+			else
+			{
+			Entity entity=(Entity)entityManager.createQuery("from com.blink.designer.model.Entity where name = '" + clazz.getSimpleName()+"'").getSingleResult();
+			for(EntityAttribute entityAttribute:entity.getEntityAttributes()){
+			System.out.println("Entity name is "+clazz.getSimpleName());
+			System.out.println("Attribute name is "+entityAttribute.getName());
+			if(fId.name().equals(entityAttribute.getName())){
+			if(entityAttribute.getIsRequired()==true){
+				
+				System.out.println("Oberyn not null is true");
+				fId.annotate(javax.validation.constraints.NotNull.class);
+			}
+			if(entityAttribute.getValidations().isAssertFalse()){
+				System.out.println(" Oberyn assertfalse is true");
+				fId.annotate(javax.validation.constraints.AssertFalse.class);	
+			}
+			if(entityAttribute.getValidations().isAssertTrue()){
+				System.out.println("Oberyn assertfalse is true");
+				fId.annotate(javax.validation.constraints.AssertTrue.class);	
+			}
+			if(entityAttribute.getValidations().isCreditCard()){
+				System.out.println("Oberyn creditcard is true");
+				fId.annotate( org.hibernate.validator.constraints.CreditCardNumber.class);	
+			}
+			if(entityAttribute.getValidations().isEmail()){
+				System.out.println("Oberyn email is true");
+				fId.annotate(org.hibernate.validator.constraints.Email.class);	
+			}
+			if(entityAttribute.getValidations().getSize()!=null){
+				System.out.println("Oberyn size is true");
+				JAnnotationUse annot=fId.annotate(javax.validation.constraints.Size.class);
+				annot.param("min", entityAttribute.getValidations().getSize().getMinSize());
+				annot.param("max",entityAttribute.getValidations().getSize().getMaxSize());
+
+			}
+			}
+			}
+			}	
+			
+				
+		
+			
 			createGetter(foo,field,packageType);
 			createSetter(foo,field,packageType);
 		}
@@ -167,6 +248,7 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 			bizServiceClass = codeModel._class(getPackageName()+ "biz."+ getServiceName()+  "BizService");
 			addBean(getConfig(),bizServiceClass);
 			addAutowiredField(bizServiceClass,GeneratorContext.getFacade(PackageType.DO));
+			
 			List<Class<?>>  clazzes= getClassesForProcessing();
 			for(Class<?> bizClass : clazzes) {
 				bizMethodGenerator.generateAllBizMethods(bizServiceClass, bizClass);
@@ -182,6 +264,7 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 		JDefinedClass daoServiceClass = null;
 		try{
 			daoServiceClass = codeModel._class(getPackageName()+ "dao."+ getServiceName()+  "DAOService");
+			daoServiceClass.annotate(Transactional.class);
 			addBean(getConfig(),daoServiceClass);
 			Map<String, JDefinedClass> clazzes= getClasses(PackageType.DO);
 			Iterator<String> definedClasses = clazzes.keySet().iterator();

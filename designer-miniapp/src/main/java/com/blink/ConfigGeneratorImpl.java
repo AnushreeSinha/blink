@@ -20,6 +20,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration.Dynamic;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
+import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -89,7 +90,7 @@ public class ConfigGeneratorImpl implements ConfigGenerator {
 	private void generateJPAConfig(JDefinedClass configClass, App app) throws JClassAlreadyExistsException {
 		JCodeModel codeModel = configClass.owner();
 		configClass.annotate(EnableTransactionManagement.class);
-		configClass.annotate(ImportResource.class).param("value", "classpath*:META-INF/beans*.xml");
+		configClass.annotate(ImportResource.class).param("value", "classpath:beans.xml");
 		
 		if(entityManager == null)
 			System.out.println("entitymanager is null now with func prada");
@@ -134,7 +135,7 @@ public class ConfigGeneratorImpl implements ConfigGenerator {
 		entityManagerFactoryMethod.annotate(Bean.class);
 		JVar factoryFieldVar = entityManagerFactoryMethod.body().decl(codeModel.ref(LocalContainerEntityManagerFactoryBean.class), "factory",JExpr._new(codeModel.ref(LocalContainerEntityManagerFactoryBean.class)));
 		entityManagerFactoryMethod.body().add(factoryFieldVar.invoke("setJpaVendorAdapter").arg(vendorFieldVar));
-		entityManagerFactoryMethod.body().add(factoryFieldVar.invoke("setPackagesToScan").arg(app.getBasePackage()+".jpa.entity"));
+		entityManagerFactoryMethod.body().add(factoryFieldVar.invoke("setPackagesToScan").arg(app.getBasePackage()+".jpa"));
 		entityManagerFactoryMethod.body().add(factoryFieldVar.invoke("setDataSource").arg(JExpr.invoke(dataSourceMethod)));
 		entityManagerFactoryMethod.body().add(factoryFieldVar.invoke("afterPropertiesSet"));
 		entityManagerFactoryMethod.body()._return(factoryFieldVar.invoke("getObject"));
@@ -192,12 +193,12 @@ public class ConfigGeneratorImpl implements ConfigGenerator {
     	}
     	JInvocation invocation = param.invoke("addServlet");
 	    invocation.arg("cxfServlet");
-	    invocation.arg(codeModel.ref(CXFNonSpringJaxrsServlet.class).dotclass());
+	    invocation.arg(codeModel.ref(CXFServlet.class).dotclass());
 		
 	    JVar dynamic = method.body().decl(codeModel.ref(Dynamic.class), "dynamic",invocation);
 		
 	    method.body().add(dynamic.invoke("setInitParameter").arg("jaxrs.serviceClasses").arg(GeneratorContext.getFacade(PackageType.DTO).fullName()));
-	    method.body().add(dynamic.invoke("addMapping").arg("/services/"));
+	    method.body().add(dynamic.invoke("addMapping").arg("/services/*"));
 		
 		
     }
