@@ -241,7 +241,9 @@ public class ConfigGeneratorImpl implements ConfigGenerator {
   	      e.printStackTrace();
   	}
     	
-    	 
+    /*	CrudCallsMethodGenerationImpl crudCalls=new CrudCallsMethodGenerationImpl();
+    	crudCalls.generateAbstractActionClass(pathRepo); 
+    	*/
     }
     
 }

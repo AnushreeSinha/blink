@@ -22,7 +22,7 @@
 		
 		Ext.define('EntityAttribute', {
 			 extend: 'Ext.data.Model',
-		     fields : ['id','name','description','searchable','dataType','primitiveId','compositeId','primaryKey','multiType','isRequired','validations']
+		     fields : ['id','name','description','searchable','dataType','primitiveId','compositeId','primaryKey','multiType','isRequired','validations','updateActionAttr']
 		} );
 		
 		
@@ -45,8 +45,9 @@
 		
 		Ext.define('Entity' , {
 			 extend: 'Ext.data.Model',
-			 fields : ['id','description','name','parentPackage_id']
+			 fields : ['id','description','name','parentPackage_id','readAction', 'createAction', 'deleteAction', 'updateAction']
 		});
+
 		
 //		Ext.define('Validations' , {
 //			 extend: 'Ext.data.Model',

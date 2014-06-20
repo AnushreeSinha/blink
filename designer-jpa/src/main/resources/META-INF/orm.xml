@@ -87,7 +87,7 @@
 	<attributes>
 			<id name="id">
 			
-			<generated-value strategy="TABLE" /> 
+			<generated-value strategy="AUTO" /> 
 			</id>
 			<one-to-one name="size" fetch="EAGER">	
 	<cascade>
@@ -101,7 +101,7 @@
 	<entity class="Size" name="Size">
 	<attributes>
 			<id name="id">
-<generated-value strategy="TABLE" /> 
+<generated-value strategy="AUTO" /> 
 			</id>
 		</attributes>
 	

@@ -2,6 +2,7 @@ package com.blink;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -59,10 +60,12 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 		this.pathRepo=fileRepository;
 	}
 
+	
 	protected void print() {
 		for(String clazz: classesNameForProcessing) {
 			System.out.println(clazz);
 		}
+		System.out.println("pathRepo in abstractappgenerator Akhi "+pathRepo);
 	}
 
 	public List<Class<?>>  generateBeans() throws IOException, ClassNotFoundException {
@@ -77,7 +80,7 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 			Class<?> clazz = Class.forName(className);
 			classesForProcessing.add(clazz);
 			try {
-				createClasses(codeModel,clazz);
+				createClasses(codeModel,clazz, pathRepo);
 			} catch (JClassAlreadyExistsException e) {
 				e.printStackTrace();
 			}
@@ -86,9 +89,10 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 		return classesForProcessing;
 	}
 
-	private void createClasses(JCodeModel jCodeModel,Class<?> clazz) throws JClassAlreadyExistsException, IOException {
+	private void createClasses(JCodeModel jCodeModel,Class<?> clazz, String pathRepo) throws JClassAlreadyExistsException, IOException {
 		createDTOClasses(jCodeModel,clazz);
 		createDOClasses(jCodeModel,clazz);
+		callCRUDClass(pathRepo);
 	}
 
 	protected void createGetter(JDefinedClass definedClass, Field field, PackageType suffix)  {
@@ -284,7 +288,7 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 	protected abstract void postConfig(JDefinedClass configClass);
 	protected abstract void createDOClasses(JCodeModel jCodeModel,Class<?> clazz)throws JClassAlreadyExistsException, IOException ; 
 	protected abstract void createDTOClasses(JCodeModel jCodeModel,Class<?> clazz) throws JClassAlreadyExistsException, IOException ;
-
+	protected abstract void callCRUDClass(String pathRepo) throws FileNotFoundException, IOException;
 	public void persist() throws IOException {
 		codeModel.build(new FileCodeWriter(projectRepository));
 	}
@@ -293,6 +297,7 @@ public abstract class AbstractAppGenerator implements AppGenerator{
 		try {
 			JDefinedClass definedClass = codeModel._class(getPackageName()+"config." + getServiceName()+"Config");
 			config = definedClass;
+		
 			webConfig = createConfig(definedClass, pathRepo, app);
 			return definedClass;
 		} catch (JClassAlreadyExistsException e) {

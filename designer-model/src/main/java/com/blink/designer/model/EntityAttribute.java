@@ -24,6 +24,10 @@ public class EntityAttribute extends BaseBlinkModel{
 	
 	private Validations validations;
 	
+	private String updateActionAttr;
+	
+	
+	
 	public boolean isSearchable() {
 		return searchable;
 	}
@@ -66,6 +70,14 @@ public class EntityAttribute extends BaseBlinkModel{
 	public void setValidations(Validations validations) {
 		this.validations = validations;
 	}
+	public String getUpdateActionAttr() {
+		return updateActionAttr;
+	}
+	public void setUpdateActionAttr(String updateActionAttr) {
+		this.updateActionAttr = updateActionAttr;
+	}
+
+	
 	
 	
 }

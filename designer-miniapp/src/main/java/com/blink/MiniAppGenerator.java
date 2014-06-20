@@ -2,6 +2,7 @@ package com.blink;
 
 import static com.blink.CodeUtil.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Iterator;
@@ -31,6 +32,7 @@ import com.sun.codemodel.JMod;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 import javax.validation.constraints.*;
+
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
@@ -51,6 +53,8 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 	public MiniAppGenerator() {
 		init();
 	}
+	
+	String pathRepo2;
 
 	public MiniAppGenerator(String packageName, String serviceName, String fileRepository) {
 		super(packageName,serviceName, fileRepository);
@@ -124,14 +128,7 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 				JAnnotationUse fetch=field.annotate(javax.persistence.OneToMany.class);
 				fetch.param("fetch",javax.persistence.FetchType.EAGER);
 			}
-		
-//			EntityAttribute entityAttribute=(EntityAttribute)entityManager.createQuery("from com.blink.designer.model.EntityAttribute where name="+field).getSingleResult();
-//			System.out.println("##############");
-//			System.out.println("Tamil entityAttribute is "+ entityAttribute);
-//			System.out.println("##############");
-//			if(entityAttribute.getIsRequired()==true){
-//				field.annotate(javax.validation.constraints.NotNull.class);	
-//			}
+	
 		}
 	}
 
@@ -208,13 +205,7 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 				annot.param("min", entityAttribute.getValidations().getSize().getMinSize());
 				annot.param("max",entityAttribute.getValidations().getSize().getMaxSize());
 
-			}
-			}
-			}
-			}	
-			
-				
-		
+			}}}}	
 			
 			createGetter(foo,field,packageType);
 			createSetter(foo,field,packageType);
@@ -227,6 +218,7 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 		JDefinedClass serviceClass = null;
 		try{
 			serviceClass = codeModel._class(getPackageName()+ "service."+ getServiceName()+  "Service");
+		
 			System.out.println("This is service class "+serviceClass);
 			addBeanService(getConfig(),serviceClass);
 			addAutowiredField(serviceClass,GeneratorContext.getFacade(PackageType.BIZ));
@@ -245,7 +237,7 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 	public JDefinedClass createBizFacade(JCodeModel codeModel) {
 		JDefinedClass bizServiceClass =  null;
 		try{
-			bizServiceClass = codeModel._class(getPackageName()+ "biz."+ getServiceName()+  "BizService");
+			bizServiceClass = codeModel._class(getPackageName()+ ".biz."+ getServiceName()+  "BizService");
 			addBean(getConfig(),bizServiceClass);
 			addAutowiredField(bizServiceClass,GeneratorContext.getFacade(PackageType.DO));
 			
@@ -259,6 +251,12 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 		return bizServiceClass;
 	}
 
+	/*public JDefinedClass createCreateActionFacade(JCodeModel codeModel){
+		JDefinedClass createActionClass= null;
+		try{
+			createActionClass = codeModel._class(getPackageName()+ "crudAction."+ getServiceName()+  "BizService");
+		}
+	}*/
 
 	public JDefinedClass createDAOFacade(JCodeModel codeModel) {
 		JDefinedClass daoServiceClass = null;
@@ -291,6 +289,9 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 
 	@Override
 	protected JDefinedClass createConfig(JDefinedClass definedClass, String pathRepo, App app) {
+//		System.out.println("this is pathRepo in ServiceFacade Macbeth "+pathRepo);
+//		pathRepo2=pathRepo;
+//		System.out.println("this is newPathRepo in ServiceFacade Macbeth "+pathRepo2);
 		return configGeneratorImpl.generateConfig(definedClass, pathRepo, app);
 		//setConfig();
 	}
@@ -318,4 +319,15 @@ public class MiniAppGenerator extends AbstractAppGenerator {
 	public void setConfigGeneratorImpl(ConfigGeneratorImpl configGeneratorImpl){
 		this.configGeneratorImpl=configGeneratorImpl;
 	}
+	
+	@SuppressWarnings("unused")
+	public void callCRUDClass(String pathRepo) throws FileNotFoundException, IOException{
+		System.out.println("this is package name in ServiceFacade signoraware "+getPackageName());
+		System.out.println("this is new path repo in ServiceFacade signoraware "+pathRepo);
+		String packageName=getPackageName();
+		CRUDcallsMethodGeneratorImpl cRUDcallsMethodGeneratorImpl=new CRUDcallsMethodGeneratorImpl();
+		cRUDcallsMethodGeneratorImpl.generateAbstractActionClass(pathRepo, packageName);
+		
+	}
+	
 }

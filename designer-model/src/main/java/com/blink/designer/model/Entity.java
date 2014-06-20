@@ -15,6 +15,14 @@ public class Entity extends BaseBlinkModel{
 	
 	private Package parentPackage;
 	
+    private String createAction;
+	
+	private String updateAction;
+	
+	private String deleteAction;
+	
+	private String readAction;
+	
 
 	public Package getParentPackage() {
 		return parentPackage;
@@ -32,6 +40,38 @@ public class Entity extends BaseBlinkModel{
 
 	public void setEntityAttributes(List<EntityAttribute> entityAttributes) {
 		this.entityAttributes = entityAttributes;
+	}
+
+	public String getCreateAction() {
+		return createAction;
+	}
+
+	public void setCreateAction(String createAction) {
+		this.createAction = createAction;
+	}
+
+	public String getUpdateAction() {
+		return updateAction;
+	}
+
+	public void setUpdateAction(String updateAction) {
+		this.updateAction = updateAction;
+	}
+
+	public String getDeleteAction() {
+		return deleteAction;
+	}
+
+	public void setDeleteAction(String deleteAction) {
+		this.deleteAction = deleteAction;
+	}
+
+	public String getReadAction() {
+		return readAction;
+	}
+
+	public void setReadAction(String readAction) {
+		this.readAction = readAction;
 	}
 
 }
